@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:
 **  系统服务处理函数,根据svc num不同的num号, 提供不同的服务

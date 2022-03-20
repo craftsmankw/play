@@ -1,0 +1,29 @@
+#! armcc -E
+/*
+**  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
+**  License(GPL)
+**  Author: craftsman@kernelworker.net
+**  Description:
+*/
+#define IROM_BASE	0x08000000
+#define IROM_SIZE	0x00080000
+#define IRAM_PRV_BASE	0x20000000
+#define IRAM_RPV_SIZE	0x00008000
+#define IRAM_APP_BASE	0x20008000
+#define IRAM_APP_SIZE	0x00010000
+
+LR_IROM1 IROM_BASE IROM_SIZE  {    ; load region size_region
+  ER_IROM1 IROM_BASE IROM_SIZE  {  ; load address = execution address
+   *.o (RESET, +First)
+   *(InRoot$$Sections)
+   .ANY (+RO)
+   .ANY (+XO)
+  }
+  RW_IRAM_PRV IRAM_PRV_BASE IRAM_RPV_SIZE  {  ; Kernel RW data, 32K
+   .ANY (prv_data)
+  }
+  RW_IRAM_APP IRAM_APP_BASE IRAM_APP_SIZE  {  ; APP RW data, 64K
+   .ANY (+RW +ZI)
+  }
+}
+

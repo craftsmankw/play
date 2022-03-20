@@ -18,4 +18,8 @@
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
+  <project>
+    <PathAndName>..\..\..\..\..\..\stm32\os\freertos\FreeRTOS-dev\FreeRTOS-dev.uvprojx</PathAndName>
+  </project>
+
 </ProjectWorkspace>

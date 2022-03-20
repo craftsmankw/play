@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:
 **  中断向量表异常处理函数实现
@@ -9,11 +9,11 @@
 **  3. SysTick_Handler: 定频触发, 调用task_scheduler进行任务栈调度逻辑
 **                      获取new_stack, 触发PendSV挂起进行任务调度
 */
-
+#include "sections.h"
 #include "ptypes.h"
 /*  任务切换  */
 volatile reg_type ** volatile curr_stack;
-volatile reg_type ** volatile new_stack;
+volatile reg_type ** volatile new_stack IRAM_PRIV_SEC;
 volatile reg_type** task_scheduler(void);
 /*  svc 任务分发  */
 void svc_distrib(reg_type *args);
@@ -41,6 +41,14 @@ void set_pendsv_suspend(void);
 	LDR R0,[R0,#24]/*  pc: 6 * 4  */ \
 	LDRB R0,[R0,#-2] /*  svc num: num addr = pc - 2*/
 
+
+void ptask_update_first_stack(volatile reg_type **stack){
+	curr_stack = stack;
+	new_stack = stack;
+}
+volatile reg_type *ptask_get_curr_stack(void){
+	return *curr_stack;
+}
 /*  svc异常处理函数
 **  提供给非特权应用访问特权资源的调度入口
 **  svc num: 0~20为系统保留号
@@ -122,7 +130,7 @@ __asm void PendSV_Handler(void){
 	LDMIA R0!,{R1, R4-R11, LR}
 	MSR CONTROL, R1
 	DSB
-    ISB
+	ISB
 	/*  判断新任务使用哪个堆栈
 	**  加载新任务堆栈到sp寄存器
 	*/
@@ -140,7 +148,7 @@ static volatile u32_t g_tick_count = 0;
 void SysTick_Handler(void){
 	volatile reg_type ** volatile tmp_stack;
 	g_tick_count++;
-	if(g_tick_count < TASK_SWITCH_KHZ){
+	if(g_tick_count < TASK_SWITCH_MS){
 		return;
 	}
 	g_tick_count = 0;

@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:系统相关服务, 及系统调用号触发
 **  

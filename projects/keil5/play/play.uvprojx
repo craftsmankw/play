@@ -327,8 +327,8 @@
             <uC99>1</uC99>
             <uGnu>1</uGnu>
             <useXO>0</useXO>
-            <v6Lang>1</v6Lang>
-            <v6LangP>1</v6LangP>
+            <v6Lang>3</v6Lang>
+            <v6LangP>3</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
@@ -360,7 +360,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -369,7 +369,7 @@
             <TextAddressRange>0x08000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\Objects\play.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -406,6 +406,16 @@
               <FileName>tasks.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\source\kernel\tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>heap_5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\source\kernel\heap_5.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu_cfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\source\kernel\mpu_cfg.c</FilePath>
             </File>
           </Files>
         </Group>

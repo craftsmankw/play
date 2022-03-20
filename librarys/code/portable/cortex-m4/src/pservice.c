@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:
 **  系统服务处理函数,根据svc num不同的num号, 提供不同的服务
@@ -37,7 +37,7 @@ __asm void run_first_task( void ){
 	MSR CONTROL, R1
 	DSB
 	ISB
-	/*  首个任务位系统私有任务
+	/*  首个任务为系统私有任务
 	**  判断新任务使用哪个堆栈
 	**  加载新任务堆栈到sp寄存器
 	*/

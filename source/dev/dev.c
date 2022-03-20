@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:使用demo
 */
@@ -12,10 +12,10 @@ void task0(pvoid_t buff);
 void task1(pvoid_t buff);
 void task2(pvoid_t buff);
 void task3(pvoid_t buff);
-int count0 = 0;
-int count1 = 0;
-int count2 = 0;
-int count3 = 0;
+int count0 __attribute__((at(0x2000c000))) = 0;
+int count1 __attribute__((at(0x2000c100))) = 0;
+int count2 __attribute__((at(0x2000c200)))= 0;
+int count3 __attribute__((at(0x2000c300)))= 0;
 
 int main(void){
 	/*  do init with play first  */

@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:
 **  任务/栈帧相关操作, api列表:
@@ -29,6 +29,8 @@ enum task_mode{
 #define TASK_PRIVILEGE 0
 #define TASK_UNPRIVILEGED 1
 
+void ptask_update_first_stack(volatile reg_type **stack);
+volatile reg_type *ptask_get_curr_stack(void);
 reg_type ptask_build_stack(reg_type task, reg_type buff, reg_type top_stack, 
 						enum task_mode mode, u8_t priv, reg_type error_handler);
 

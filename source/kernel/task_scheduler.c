@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:任务调度相关处理
 **  
@@ -25,8 +25,6 @@ static volatile u32_t g_scheduler_suspended = (u32_t)0;
 **  本例在开启任务调度时进行注册的task_scheduler_working()
 **  ptask_register_task_sched(switch_task_stack)
 */
-extern volatile reg_type ** volatile curr_stack;
-extern volatile reg_type ** volatile new_stack;
 
 static int is_ready_2_work(task_info_t *task_info){
 	if(task_info->status != TASK_STATUS_PENDING){
@@ -39,13 +37,17 @@ static int is_ready_2_work(task_info_t *task_info){
 **  本函数供异常例程调用,获取任务调度后的堆栈地址指针
 */
 static volatile reg_type **switch_task_stack(void){
-	task_info_t *task_last = tasks_get_last();
+	u8_t around = 0;
+	u8_t svc_mode;
+	task_info_t *task_last;
 	if(g_scheduler_suspended > 0){
 		goto no_switch_action;
 	}
 	if(g_next_task == NULL){
 		g_next_task = g_curr_task;
 	}
+	svc_mode = g_next_task->svc;
+	task_last = tasks_get_last(svc_mode);
 	g_next_task++;
 	while(1){
 		if(g_next_task == g_curr_task){
@@ -57,7 +59,14 @@ static volatile reg_type **switch_task_stack(void){
 		}
 		g_next_task++;
 		if(g_next_task > task_last){
-			g_next_task = tasks_get_first();
+			if(around){
+				/*  found no pending task, keep working with current  */
+				goto no_switch_action;
+			}
+			around++;
+			svc_mode = (g_curr_task->svc == 0);
+			g_next_task = tasks_get_first(svc_mode);
+			task_last = tasks_get_last(svc_mode);
 		}
 	}
 	/*  设置新任务的堆栈,准备进行任务切换
@@ -86,7 +95,14 @@ volatile u32_t g_exit_count=0;
 void task_exit(void){
 	/*  do something here, while task return
 	*/
-	tasks_free_by_stack(*curr_stack);
+	tasks_free_by_stack(FALSE, ptask_get_curr_stack());
+	g_exit_count++;
+	for(;;);
+}
+void task_svc_exit(void){
+	/*  do something here, while task return
+	*/
+	tasks_free_by_stack(TRUE, ptask_get_curr_stack());
 	g_exit_count++;
 	for(;;);
 }
@@ -103,7 +119,12 @@ static int task_init_stack(task_info_t *task_info){
 /*  create task base
 */
 static pvoid_t task_create_base(task_ft task, reg_type buff, enum task_mode mode, u8_t priv){
-	task_info_t *task_info = task_new();
+	task_info_t *task_info;
+	if(priv == TASK_UNPRIVILEGED){
+		task_info = task_new(FALSE);
+	}else{
+		task_info = task_new(TRUE);
+	}
 	if(task_info == NULL){
 		return NULL;
 	}
@@ -115,8 +136,16 @@ static pvoid_t task_create_base(task_ft task, reg_type buff, enum task_mode mode
 	if(g_curr_task == NULL){
 		g_curr_task = task_info;
 	}
-	task_info->stack = (reg_type *)ptask_build_stack((reg_type)task, (reg_type)buff, 
+	if(priv == TASK_UNPRIVILEGED){
+		task_info->stack = (reg_type *)ptask_build_stack((reg_type)task, (reg_type)buff, 
 							(reg_type)task_info->stack, mode, priv, (reg_type)task_exit);
+		task_info->svc = 0;
+	}else{
+		task_info->stack = (reg_type *)ptask_build_stack((reg_type)task, (reg_type)buff, 
+							(reg_type)task_info->stack, mode, priv, (reg_type)task_svc_exit);
+		task_info->svc = 1;
+	}
+	
 	return task_info;
 }
 
@@ -134,8 +163,8 @@ pvoid_t task_create_ksvc(task_ft task, pvoid_t buff){
 void task_scheduler_working(void){
 	ptask_register_task_sched(switch_task_stack);
 	ptask_register_pre_sched(pre_sched);
-	curr_stack = (volatile reg_type **)&g_curr_task->stack;
-	new_stack = curr_stack;
+	ptask_update_first_stack((volatile reg_type **)&g_curr_task->stack);
+
 	//__set_PSP((u32_t)(g_curr_task->stack + 17));
 	/*  设置PendSV中断优先级为最低,在PendSV中进行实际的任务切换操作  */
 	NVIC_SetPriority(PendSV_IRQn,0xFF);
@@ -154,4 +183,10 @@ void task_scheduler_working(void){
 
 void task_suspend(void){
 	g_scheduler_suspended++;
+}
+void task_suspend_all(void){
+	task_suspend();
+}
+void task_resume_all(void){
+	g_scheduler_suspended--;
 }

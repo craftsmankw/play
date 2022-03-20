@@ -369,7 +369,7 @@
             <TextAddressRange>0x08000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\Objects\cortex-m4.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -405,12 +405,17 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>regs</GroupName>
+          <GroupName>storage</GroupName>
           <Files>
             <File>
-              <FileName>pregs.c</FileName>
+              <FileName>pmmap.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\code\portable\cortex-m4\src\pregs.c</FilePath>
+              <FilePath>..\..\..\code\portable\cortex-m4\src\pmmap.c</FilePath>
+            </File>
+            <File>
+              <FileName>pmpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\code\portable\cortex-m4\src\pmpu.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,6 +1,6 @@
 /*
 **  Copyright (c) 2022 craftsman@kernelworker.net All rights reserved
-**  License(GPL)
+**  License(GPL v2.0)
 **  Author: craftsman@kernelworker.net
 **  Description:
 */
@@ -17,6 +17,9 @@ typedef short s16_t;
 typedef char s8_t;
 #endif
 
+#ifndef bool
+typedef u8_t bool;
+#endif
 typedef u8_t *pbyte_t;
 typedef void *pvoid_t;
 
